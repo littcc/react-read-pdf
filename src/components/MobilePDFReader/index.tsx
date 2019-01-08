@@ -148,10 +148,10 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       self.metadata = metadata;
 
       // Provides some basic debug information
-      console.log("PDF " + pdfDocument.fingerprint + " [" +
-                  info.PDFFormatVersion + " " + (info.Producer || "-").trim() +
-                  " / " + (info.Creator || "-").trim() + "]" +
-                  " (PDF.js: " + (pdfjsLib.version || "-") + ")");
+      // console.log("PDF " + pdfDocument.fingerprint + " [" +
+      //             info.PDFFormatVersion + " " + (info.Producer || "-").trim() +
+      //             " / " + (info.Creator || "-").trim() + "]" +
+      //             " (PDF.js: " + (pdfjsLib.version || "-") + ")");
 
       let pdfTitle;
       if (metadata && metadata.has("dc:title")) {

@@ -2,8 +2,7 @@ import * as React from "react";
 import * as CSSModules from "react-css-modules";
 import * as styles from "./index.less";
 import * as pdfjsLib from "pdfjs-dist";
-// The workerSrc property shall be specified.
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.550/pdf.worker.js";
+
 // the default params
 const DEFAULT_DESIRE_WIDTH = 980;
 const DEFAULT_SCALE = 1;
@@ -23,6 +22,7 @@ interface IProps {
   showAllPage?: boolean;
   onDocumentComplete?: any;
   width?: number;
+  workerSrc?: string;
 }
 interface IStates {
   pdf: any;
@@ -41,6 +41,9 @@ export class PDFReader extends React.Component<IProps, IStates> {
     public constructor(props: IProps) {
       super(props);
       this.canvas = React.createRef();
+      // The workerSrc property shall be specified.
+      pdfjsLib.GlobalWorkerOptions.workerSrc = props.workerSrc || "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.js";
+
     }
     public componentDidMount () {
       const { url, data, showAllPage, onDocumentComplete } = this.props;

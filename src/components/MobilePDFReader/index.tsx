@@ -1,11 +1,9 @@
 import * as React from "react";
 import * as CSSModules from "react-css-modules";
 import * as styles from "./index.less";
-console.log(styles);
 import * as pdfjsLib from "pdfjs-dist";
 const pdfjsViewer = require("../../../node_modules/pdfjs-dist/web/pdf_viewer.js");
-// The workerSrc property shall be specified.
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.550/pdf.worker.js";
+
 // default scale
 const DEFAULT_MIN_SCALE = 0.25;
 const DEFAULT_MAX_SCALE = 10.0;
@@ -27,6 +25,7 @@ interface IProps {
   maxScale?: number;
   isShowHeader?:boolean;
   isShowFooter?:boolean;
+  workerSrc?: string;
 }
 interface IStates {
   currentPageNumber: any;
@@ -62,6 +61,8 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     this.pdfHistory = null;
     this.pdfLinkService = null;
     this.container = React.createRef();
+    // The workerSrc property shall be specified.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = props.workerSrc || "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.js";
   }
   get pagesCount () {
     return this.pdfDocument.numPages;

@@ -2,8 +2,10 @@
 process.env.NODE_ENV = 'development';
 const merge = require('webpack-merge');
 const webpack = require('webpack');
-const commonConfig = require('./common');
 const path = require('path');
+
+const commonConfig = require('./common');
+
 module.exports = merge(commonConfig, {
   mode: 'development',
   entry: [

@@ -73,7 +73,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
-    "pdfjs-dist": "^2.0.550",
+    "pdfjs-dist": "^2.0.943",
     "react-css-modules": "^4.7.7",
     "ts-loader": "^5.2.2",
     "typings-for-css-modules-loader": "^1.7.0",

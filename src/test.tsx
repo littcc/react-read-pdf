@@ -34,8 +34,8 @@ export default class PDFTest extends Component{
   public render(){
     const { page } = this.state;
     return <Fragment>
-              <div style={{height:600,overflow:'srcoll'}}>
-                <MobilePDFReader url={'/test.pdf'}/>
+              <div style={{height:'100vh',overflow:'srcoll'}}>
+                <MobilePDFReader isShowHeader={false} url={'/111.pdf'}/>
               </div>
           </Fragment>
   }

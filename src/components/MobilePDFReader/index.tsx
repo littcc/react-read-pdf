@@ -2,6 +2,7 @@ import * as React from "react";
 import * as CSSModules from "react-css-modules";
 import * as styles from "./index.less";
 import * as pdfjsLib from "pdfjs-dist";
+import { debug } from "util";
 const pdfjsViewer = require("../../../node_modules/pdfjs-dist/web/pdf_viewer.js");
 
 // default scale
@@ -26,6 +27,7 @@ interface IProps {
   isShowHeader?:boolean;
   isShowFooter?:boolean;
   workerSrc?: string;
+  progressColor?: string;
 }
 interface IStates {
   currentPageNumber: any;
@@ -39,7 +41,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     currentPageNumber: 1,
     currentScaleValue: "auto",
     totalPage: null,
-    title: ""
+    title: "",
   };
   pdfLoadingTask: any;
   pdfViewer: any;
@@ -268,8 +270,11 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     });
   }
   public render(){
-    const { title } = this.state;
-    const { isShowHeader,isShowFooter } = this.props;
+    const { title, currentPageNumber, totalPage } = this.state;
+    const { isShowHeader,isShowFooter, progressColor  } = this.props;
+    const progressStyle = {
+      width: `${ 100 * currentPageNumber / totalPage }vw`,
+    };
     let showHeader = true;
     let showFooter = true;
     if(isShowHeader!==undefined){
@@ -278,6 +283,11 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     if(isShowFooter!==undefined){
       showFooter = isShowFooter;
     }
+
+    if (progressColor) {
+      progressStyle.background = progressColor;
+    }
+
     return <div className='mobile__pdf__container'>
               {
                 showHeader&&<header className="mobile__pdf__container__header">
@@ -287,6 +297,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
               <div id="viewerContainer" ref={this.container}>
                 <div id="viewer" className="pdfViewer" ></div>
               </div>
+              {this.state.totalPage ? <div className='viewer-progress' style={progressStyle}></div> : null}
               <div id="loadingBar">
                 <div className="progress"></div>
                 <div className="glimmer"></div>
@@ -309,15 +320,15 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
                 <div className="clearBoth"></div>
                 <textarea id="errorMoreInfo" hidden={true} readOnly={true}></textarea>
               </div>
-              {
-                showFooter&&<footer>
-                  <button className="toolbarButton pageUp" title="Previous Page" id="previous" onClick={this.pageDelete}></button>
-                  <button className="toolbarButton pageDown" title="Next Page" id="next" onClick={this.pageAdd}></button>
-                  <input type="number" id="pageNumber" className="toolbarField pageNumber" value={this.state.currentPageNumber} size={4} min={1} />
-                  <button className="toolbarButton zoomOut" title="Zoom Out" id="zoomOut" onClick={this.zoomOut}></button>
-                  <button className="toolbarButton zoomIn" title="Zoom In" id="zoomIn" onClick={this.zoomIn}></button>
+                <footer>
+                  <div>
+                    <button className="toolbarButton zoomIn" title="Zoom In" id="zoomIn" onClick={this.zoomIn}></button>
+                    <button className="toolbarButton zoomOut" title="Zoom Out" id="zoomOut" onClick={this.zoomOut}></button>
+                  </div>
+                  <div className='toolbar-page'>
+                    {this.state.totalPage ? <div id='pageNumber'>{currentPageNumber} / { totalPage }</div> : null}
+                  </div>
                </footer>
-              }
 
           </div>
   }

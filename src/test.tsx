@@ -35,7 +35,7 @@ export default class PDFTest extends Component{
     const { page } = this.state;
     return <Fragment>
               <div style={{height:'100vh',overflow:'srcoll'}}>
-                <MobilePDFReader isShowHeader={false} url={'/111.pdf'}/>
+                <MobilePDFReader isShowHeader={false} url={'/11.pdf'} progressColor={'red'} />
               </div>
           </Fragment>
   }

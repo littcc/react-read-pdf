@@ -272,8 +272,9 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
   public render(){
     const { title, currentPageNumber, totalPage } = this.state;
     const { isShowHeader,isShowFooter, progressColor  } = this.props;
+    const width = `${ 100 * Number(currentPageNumber) / Number(totalPage) }vw`;
     const progressStyle = {
-      width: `${ 100 * currentPageNumber / totalPage }vw`,
+      width
     };
     let showHeader = true;
     let showFooter = true;
@@ -285,7 +286,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     }
 
     if (progressColor) {
-      progressStyle.background = progressColor;
+      progressStyle['background'] = progressColor;
     }
 
     return <div className='mobile__pdf__container'>

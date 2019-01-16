@@ -28,6 +28,9 @@ interface IProps {
   isShowFooter?:boolean;
   workerSrc?: string;
   progressColor?: string;
+  isShowProgress?: string;
+  documentBackground?: string;
+  progress?: string;
 }
 interface IStates {
   currentPageNumber: any;
@@ -53,10 +56,12 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
   error: any;
   documentInfo: any;
   metadata: any;
+  element: any;
   public constructor (props: IProps) {
     super(props);
     this.pdfLoadingTask = null;
     this.pdfDocument = null;
+    this.element = null;
     this.pdfViewer = {
       currentScaleValue: null
     },
@@ -83,6 +88,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
   private open (params) {
     let url = params.url
     let self = this
+    const { onDocumentComplete } = this.props;
     this.setTitleUsingUrl(url)
     // Loading document.
     let loadingTask = pdfjsLib.getDocument({
@@ -103,8 +109,8 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       self.pdfViewer.setDocument(pdfDocument)
       self.pdfLinkService.setDocument(pdfDocument)
       self.pdfHistory.initialize(pdfDocument.fingerprint)
-      self.loadingBar.hide()
       self.setTitleUsingMetadata(pdfDocument)
+      onDocumentComplete && onDocumentComplete();
     }, function (exception) {
       let message = exception && exception.message
       let l10n = self.l10n
@@ -179,11 +185,21 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     this.setState({title});
   }
   private progress (level) {
+      const { onDocumentComplete } = this.props;
     let percent = Math.round(level * 100);
     // Updating the bar if value increases.
     if (percent > this.loadingBar.percent || isNaN(percent)) {
       this.loadingBar.percent = percent;
     }
+
+    if (this.loadingBar.percent === 100) {
+        this.element = document.querySelector('#viewer.pdfViewer');
+        setTimeout(()=> {
+            this.loadingBar.hide();
+            this.computedContentHeight();
+        }, 200)
+    }
+
   }
   private initUI () {
     let linkService = new pdfjsViewer.PDFLinkService();
@@ -225,6 +241,12 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       self.setState({ currentPageNumber: page });
     });
   }
+  private computedContentHeight() {
+      const children = this.element.children;
+      if (children && children[0]) {
+          this.element.style.height = `${children[0].clientHeight * children.length + 20}px`;
+      }
+  }
   private zoomIn = (ticks) => {
     let newScale = this.pdfViewer.currentScale;
     do {
@@ -233,6 +255,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       newScale = Math.min(MAX_SCALE, newScale);
     } while (--ticks && newScale < MAX_SCALE);
     this.pdfViewer.currentScaleValue = newScale;
+    this.computedContentHeight();
   }
   private zoomOut = (ticks) => {
     let newScale = this.pdfViewer.currentScale;
@@ -242,6 +265,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       newScale = Math.max(MIN_SCALE, newScale);
     } while (--ticks && newScale > MIN_SCALE);
     this.pdfViewer.currentScaleValue = newScale;
+    this.computedContentHeight();
   }
   private pageAdd = () => {
     if (this.pdfViewer.currentPageNumber > this.pdfDocument.numPages) {
@@ -271,8 +295,14 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
   }
   public render(){
     const { title, currentPageNumber, totalPage } = this.state;
-    const { isShowHeader,isShowFooter, progressColor  } = this.props;
+    const { isShowHeader,isShowFooter, progressColor, isShowProgress, documentBackground, progress = '文件加载中, 请稍后.'  } = this.props;
     const width = `${ 100 * Number(currentPageNumber) / Number(totalPage) }vw`;
+    const style = {};
+
+    if (documentBackground) {
+        style['background'] = documentBackground;
+    }
+
     const progressStyle = {
       width
     };
@@ -289,16 +319,16 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
       progressStyle['background'] = progressColor;
     }
 
-    return <div className='mobile__pdf__container'>
+    return <div className='mobile__pdf__container' style={style}>
               {
                 showHeader&&<header className="mobile__pdf__container__header">
                    {title}
                 </header>
-              }  
+              }
               <div id="viewerContainer" ref={this.container}>
                 <div id="viewer" className="pdfViewer" ></div>
               </div>
-              {this.state.totalPage ? <div className='viewer-progress' style={progressStyle}></div> : null}
+              {this.state.totalPage && isShowProgress ? <div className='viewer-progress' style={progressStyle}></div> : null}
               <div id="loadingBar">
                 <div className="progress"></div>
                 <div className="glimmer"></div>
@@ -321,15 +351,15 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
                 <div className="clearBoth"></div>
                 <textarea id="errorMoreInfo" hidden={true} readOnly={true}></textarea>
               </div>
-                <footer>
-                  <div>
-                    <button className="toolbarButton zoomIn" title="Zoom In" id="zoomIn" onClick={this.zoomIn}></button>
-                    <button className="toolbarButton zoomOut" title="Zoom Out" id="zoomOut" onClick={this.zoomOut}></button>
-                  </div>
-                  <div className='toolbar-page'>
-                    {this.state.totalPage ? <div id='pageNumber'>{currentPageNumber} / { totalPage }</div> : null}
-                  </div>
-               </footer>
+              <footer>
+                <div>
+                  <button className="toolbarButton zoomIn" title="Zoom In" id="zoomIn" onClick={this.zoomIn}></button>
+                  <button className="toolbarButton zoomOut" title="Zoom Out" id="zoomOut" onClick={this.zoomOut}></button>
+                </div>
+                <div className='toolbar-page'>
+                  {this.state.totalPage ? <div id='pageNumber'>{currentPageNumber} / { totalPage }</div> : null}
+                </div>
+             </footer>
 
           </div>
   }

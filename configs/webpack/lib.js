@@ -8,11 +8,7 @@ const config = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
-    entry: {
-        index: ['babel-polyfill',
-            path.resolve(__dirname, '../../src/index.tsx'),
-        ],
-    },
+    entry: path.resolve(__dirname, '../../src/index.tsx'),
     output: {
         publicPath: ASSET_PATH,
         path: path.resolve(__dirname, '../../lib'),

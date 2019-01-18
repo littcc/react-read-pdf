@@ -267,6 +267,10 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
     this.pdfViewer.currentScaleValue = newScale;
     this.computedContentHeight();
   }
+  private zoomReset = (ticks) => {
+    this.pdfViewer.currentScaleValue = DEFAULT_SCALE_VALUE;
+    this.computedContentHeight();
+  }
   private pageAdd = () => {
     if (this.pdfViewer.currentPageNumber > this.pdfDocument.numPages) {
       return;
@@ -355,6 +359,7 @@ export class MobilePDFReader extends React.Component<IProps,IStates> {
                 <div>
                   <button className="toolbarButton zoomIn" title="Zoom In" id="zoomIn" onClick={this.zoomIn}></button>
                   <button className="toolbarButton zoomOut" title="Zoom Out" id="zoomOut" onClick={this.zoomOut}></button>
+                  <button className="toolbarButton zoomReset" title="Zoom Reset" id="zoomReset" onClick={this.zoomReset}></button>
                 </div>
                 <div className='toolbar-page'>
                   {this.state.totalPage ? <div id='pageNumber'>{currentPageNumber} / { totalPage }</div> : null}

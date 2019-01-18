@@ -98,29 +98,50 @@
             color: #919191;
         }
 
-        .toolbarButton.zoomOut {
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 2rem;
-            left: 85%;
-            top: -100%;
-            background: url('@{images}/icon_zoom_out.png') no-repeat center center
-                rgba(216, 216, 216, 0.6);
-            background-size: 2rem;
+        .toolbarButton {
+            &:after {
+                content: '';
+                position: absolute;
+                top: -5px;
+                bottom: -5px;
+                left: -5px;
+                right: -5px;
+            }
+            &.zoomOut {
+                position: absolute;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 2rem;
+                right: 35px;
+                top: -200%;
+                background: url('@{images}/icon_zoom_out.png') no-repeat center center
+                    rgba(216, 216, 216, 0.6);
+                background-size: 2rem;
+            }
+            &.zoomIn {
+                position: absolute;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 2rem;
+                right: 35px;
+                top: -300%;
+                background: url('@{images}/icon_zoom_in.png') no-repeat center center
+                    rgba(216, 216, 216, 0.6);
+                background-size: 2rem;
+            }
+            &.zoomReset {
+                position: absolute;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 2rem;
+                right: 35px;
+                top: -100%;
+                background: url('@{images}/icon_zoom_reset.png') no-repeat center center
+                    rgba(216, 216, 216, 0.6);
+                background-size: 2rem;
+            }
         }
 
-        .toolbarButton.zoomIn {
-            position: absolute;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 2rem;
-            left: 85%;
-            top: -200%;
-            background: url('@{images}/icon_zoom_in.png') no-repeat center center
-                rgba(216, 216, 216, 0.6);
-            background-size: 2rem;
-        }
 
         .toolbarButton[disabled] {
             opacity: 0.3;
@@ -161,12 +182,12 @@
         }
 
         .pdfViewer .page .loadingIcon {
-            width: 2rem;
-            height: 2rem;
+            width: 1.35rem;
+            height: 1.35rem;
             background: url('@{images}/loading-icon.gif') no-repeat center center;
             position: absolute;
-            top: calc((100% - 2rem) / 2);
-            left: calc((100% - 2rem) / 2);
+            top: calc((100% - 1.35rem) / 2);
+            left: calc((100% - 1.35rem) / 2);
             background-size: cover;
         }
 
@@ -177,9 +198,6 @@
             left: 0;
             bottom: 0;
             right: 0;
-            // &.hidden {
-            //     display: block;
-            // }
             .progress {
                 position: absolute;
                 width: 0;

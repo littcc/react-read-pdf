@@ -13,12 +13,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/littcc/react-read-pdf.git"
+    "url": "git+https://github.com/littcc/react-read-pdf-prettier.git"
   },
   "bugs": {
-    "url": "https://github.com/littcc/react-read-pdf/issues"
+    "url": "https://github.com/littcc/react-read-pdf-prettier/issues"
   },
-  "homepage": "https://github.com/littcc/react-read-pdf",
+  "homepage": "https://github.com/littcc/react-read-pdf-prettier",
   "scripts": {
     "build": "yarn run clean-dist && webpack -p --config=configs/webpack/prod.js",
     "clean-dist": "rm -f -r -d dist",

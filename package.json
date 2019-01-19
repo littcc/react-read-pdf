@@ -13,12 +13,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/forthealllight/react-read-pdf.git"
+    "url": "git+https://github.com/littcc/react-read-pdf.git"
   },
   "bugs": {
-    "url": "https://github.com/forthealllight/react-read-pdf/issues"
+    "url": "https://github.com/littcc/react-read-pdf/issues"
   },
-  "homepage": "https://github.com/forthealllight/react-read-pdf",
+  "homepage": "https://github.com/littcc/react-read-pdf",
   "scripts": {
     "build": "yarn run clean-dist && webpack -p --config=configs/webpack/prod.js",
     "clean-dist": "rm -f -r -d dist",

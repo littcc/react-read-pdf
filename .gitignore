@@ -27,3 +27,4 @@ yarn.lock
 
 .idea
 dist
+/public/yzh.pdf

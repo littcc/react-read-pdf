@@ -1,0 +1,7 @@
+/config
+lib
+node_modules
+pipeline
+scripts
+package.json
+build

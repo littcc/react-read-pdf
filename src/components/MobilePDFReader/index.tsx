@@ -2,7 +2,6 @@ import * as React from "react";
 import * as CSSModules from "react-css-modules";
 import * as styles from "./index.less";
 import * as pdfjsLib from "pdfjs-dist";
-import { debug } from "util";
 const pdfjsViewer = require("../../../node_modules/pdfjs-dist/web/pdf_viewer.js");
 
 // default scale
@@ -16,7 +15,8 @@ let DEFAULT_URL = "/test.pdf";
 let DEFAULT_SCALE_DELTA = 1.1;
 let MIN_SCALE = DEFAULT_MIN_SCALE;
 let MAX_SCALE = DEFAULT_MAX_SCALE;
-let DEFAULT_SCALE_VALUE: string | number = "auto"; // in order to be responsive
+const CMAP_URL = "../../../node_modules/pdfjs-dist/cmaps/";
+let DEFAULT_SCALE_VALUE: string | number = "page-width"; // in order to be responsive
 
 interface IProps {
     url: string | object;
@@ -33,6 +33,8 @@ interface IProps {
     documentBackground?: string;
     progress?: string;
     textLayerMode?: boolean;
+    hideBarTime?: number;
+    renderer?: string;
 }
 interface IStates {
     currentPageNumber: any;
@@ -41,7 +43,7 @@ interface IStates {
     title: string;
 }
 @CSSModules(styles)
-export class MobilePDFReader extends React.Component<IProps, IStates> {
+export class MobilePDFReader extends React.PureComponent<IProps, IStates> {
     state: IStates = {
         currentPageNumber: 1,
         currentScaleValue: "auto",
@@ -60,17 +62,21 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
     documentInfo: any;
     metadata: any;
     element: any;
+    pagechange: any;
+    pagesinit: any;
 
     public constructor(props: IProps) {
         super(props);
         this.pdfLoadingTask = null;
         this.pdfDocument = null;
         this.element = null;
-        (this.pdfViewer = {
+        this.pdfViewer = {
             currentScaleValue: null,
-        }),
-            (this.pdfHistory = null);
+        };
+        this.pdfHistory = null;
         this.pdfLinkService = null;
+        this.pagesinit = null;
+        this.pagechange = null;
         this.container = React.createRef();
         // The workerSrc property shall be specified.
         pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -95,15 +101,16 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
     }
 
     private open(params) {
-        let url = params.url;
+        const { url } = params;
         const { onDocumentComplete } = this.props;
         this.setTitleUsingUrl(url);
         // Loading document.
         let loadingTask = pdfjsLib.getDocument({
-            url: url,
+            url,
             withCredentials: true,
             maxImageSize: MAX_IMAGE_SIZE,
             cMapPacked: CMAP_PACKED,
+            // cMapUrl: CMAP_URL,
         });
         this.pdfLoadingTask = loadingTask;
 
@@ -195,7 +202,7 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
     }
 
     private progress(level) {
-        const { onDocumentComplete } = this.props;
+        const { onDocumentComplete, hideBarTime = 1000 } = this.props;
         let percent = Math.round(level * 100);
         // Updating the bar if value increases.
         if (percent > this.loadingBar.percent || isNaN(percent)) {
@@ -205,17 +212,23 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
         if (this.loadingBar.percent === 100) {
             this.element = document.querySelector("#viewer.pdfViewer");
             setTimeout(() => {
-                this.loadingBar.hide();
                 this.computedContentHeight();
-            }, 200);
+                this.loadingBar.hide();
+            }, hideBarTime);
         }
     }
 
     private initUI() {
-        let linkService = new pdfjsViewer.PDFLinkService();
-        const { scale, page, onDocumentComplete, textLayerMode = TEXT_LAYER_MODE } = this.props;
-        this.pdfLinkService = linkService;
+        const {
+            scale = DEFAULT_SCALE_VALUE,
+            page = 1,
+            onDocumentComplete,
+            textLayerMode = TEXT_LAYER_MODE,
+            renderer = "canvas"
+        } = this.props;
+        const linkService = new pdfjsViewer.PDFLinkService();
 
+        this.pdfLinkService = linkService;
         this.l10n = pdfjsViewer.NullL10n;
 
         let container = this.container.current;
@@ -223,6 +236,7 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
             container,
             linkService,
             l10n: this.l10n,
+            renderer,
             useOnlyCssZoom: USE_ONLY_CSS_ZOOM,
             textLayerMode,
         });
@@ -233,22 +247,22 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
             linkService: linkService,
         });
         linkService.setHistory(this.pdfHistory);
-        container.addEventListener("pagesinit", () => {
+
+        this.pagesinit = () => {
             // We can use pdfViewer now, e.g. let's change default scale.
             // deal with the init page in the props
-            if (scale) {
-                DEFAULT_SCALE_VALUE = scale;
-            }
-            if (page) {
-                pdfViewer.currentPageNumber = page;
-            }
-            pdfViewer.currentScaleValue = DEFAULT_SCALE_VALUE;
+            pdfViewer.currentScaleValue = scale;
+            pdfViewer.currentPageNumber = page;
             this.setState({ totalPage: this.pdfDocument.numPages });
-        });
-        container.addEventListener("pagechange", evt => {
+        };
+
+        this.pagechange = evt => {
             let page = evt.pageNumber;
             this.setState({ currentPageNumber: page });
-        });
+        };
+
+        container.addEventListener("pagesinit", this.pagesinit);
+        container.addEventListener("pagechange", this.pagechange);
     }
 
     private computedContentHeight() {
@@ -312,6 +326,12 @@ export class MobilePDFReader extends React.Component<IProps, IStates> {
         this.open({
             url,
         });
+    }
+
+    public componentWillUnmount() {
+        this.pdfLoadingTask.destroy();
+        this.container.removeEventListener("pagesinit", this.pagesinit);
+        this.container.removeEventListener("pagechange", this.pagechange);
     }
 
     public render() {

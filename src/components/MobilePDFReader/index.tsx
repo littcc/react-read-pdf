@@ -80,7 +80,8 @@ export class MobilePDFReader extends React.PureComponent<IProps, IStates> {
         this.container = React.createRef();
         // The workerSrc property shall be specified.
         pdfjsLib.GlobalWorkerOptions.workerSrc =
-            props.workerSrc || "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.js";
+            // props.workerSrc || "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.js";
+            props.workerSrc || "http://172.16.0.2:8101/vendors~pdfjsWorker.app.js";
     }
 
     get pagesCount() {
@@ -209,7 +210,8 @@ export class MobilePDFReader extends React.PureComponent<IProps, IStates> {
             this.loadingBar.percent = percent;
         }
 
-        if (this.loadingBar.percent === 100) {
+        // TODO 解决某些情况下服务器 没有返回 content-lenth 时不能正确关闭 loading bar 的问题
+        if (this.loadingBar.percent === 100 || (percent === 100 && level === 1)) {
             this.element = document.querySelector("#viewer.pdfViewer");
             setTimeout(() => {
                 this.computedContentHeight();
@@ -224,7 +226,7 @@ export class MobilePDFReader extends React.PureComponent<IProps, IStates> {
             page = 1,
             onDocumentComplete,
             textLayerMode = TEXT_LAYER_MODE,
-            renderer = "canvas"
+            renderer = "canvas",
         } = this.props;
         const linkService = new pdfjsViewer.PDFLinkService();
 

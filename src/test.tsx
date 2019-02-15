@@ -37,7 +37,7 @@ export default class PDFTest extends Component {
                 <div style={{ height: "100vh", overflow: "srcoll" }}>
                     <MobilePDFReader
                         isShowHeader={false}
-                        url={"/1.pdf"}
+                        url={"/svg2.pdf"}
                         textLayerMode
                         renderer="svg"
                         progressColor={"red"}

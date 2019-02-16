@@ -1,6 +1,6 @@
 {
   "name": "react-read-pdf-prettier",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "基于react-read-pdf项目修改的一款自用的pdfview组件 有更简洁的样式",
   "keywords": [
     "react",

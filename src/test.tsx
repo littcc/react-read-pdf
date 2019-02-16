@@ -37,12 +37,15 @@ export default class PDFTest extends Component {
                 <div style={{ height: "100vh", overflow: "srcoll" }}>
                     <MobilePDFReader
                         isShowHeader={false}
-                        url={"/svg2.pdf"}
-                        textLayerMode
-                        renderer="svg"
+                        url={"/svg.pdf"}
+                        // textLayerMode
+                        // renderer="svg"
                         progressColor={"red"}
                         onDocumentComplete={() => {
                             console.log("完成加载.");
+                        }}
+                        onDocumentError={() => {
+                            console.log("加载失败.");
                         }}
                     />
                 </div>

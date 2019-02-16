@@ -23,6 +23,7 @@ interface IProps {
     page?: number | string;
     scale?: number | string;
     onDocumentComplete?: any;
+    onDocumentError?: any;
     minScale?: number;
     maxScale?: number;
     isShowHeader?: boolean;
@@ -146,8 +147,10 @@ export class MobilePDFReader extends React.PureComponent<IProps, IStates> {
                     loadingErrorMessage = l10n.get("loading_error", null, "An error occurred while loading the PDF.");
                 }
 
-                loadingErrorMessage.then(msg => {
-                    console.log(msg);
+                loadingErrorMessage.then(err => {
+                    const { onDocumentError } = this.props;
+                    console.log(err);
+                    onDocumentError && onDocumentError(err);
                 });
                 this.loadingBar.hide();
             }
